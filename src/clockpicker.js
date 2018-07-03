@@ -118,7 +118,11 @@
 		this.spanHours = popover.find('.clockpicker-span-hours');
 		this.spanMinutes = popover.find('.clockpicker-span-minutes');
 		this.spanAmPm = popover.find('.clockpicker-span-am-pm');
-		this.amOrPm = "";
+		this.amOrPm = "PM";
+		this.min = null;
+		this.max = null;
+		this.hours = 0;
+		this.minutes = 0;
 
 		// Setup for for 12 hour clock if option is selected
 		if (options.twelvehour) {
@@ -139,12 +143,43 @@
 				}).appendTo(this.amPmBlock);
 				
 		}
-		
+
 		if (! options.autoclose) {
-			// If autoclose is not setted, append a button
+			// If autoclose is not set, append a button
 			$('<button type="button" class="btn btn-sm btn-default btn-block clockpicker-button">' + options.donetext + '</button>')
 				.click($.proxy(this.done, this))
 				.appendTo(popover);
+		}
+
+		// Parse Min Option
+		if (options.min) {
+			this.min = options.min.split(':');
+			if (this.min.length !== 2) {
+				this.min = null;
+			}
+			else {
+				for (let i = 0; i < this.min.length; i++) {
+					this.min[i]= +this.min[i];
+				}
+			}
+		}
+
+		// Parse Max Option
+		if (options.max) {
+			this.max = options.max.split(':');
+			if (this.max.length !== 2) {
+				this.max = null;
+			}
+			else {
+				for (let i = 0; i < this.max.length; i++) {
+					this.max[i]= +this.max[i];
+				}
+
+				// Ensure that max is after min, if not remove the max it's invalid
+				if (this.min && ((this.min[0] > this.max[0]) || (this.min[0] === this.max[0] && this.min[1] >= this.max[1]))) {
+					this.max = null;
+				}
+			}
 		}
 
 		// Placement and arrow align - make sure they make sense.
@@ -186,6 +221,7 @@
 				radian = i / 6 * Math.PI;
 				var inner = i > 0 && i < 13;
 				radius = inner ? innerRadius : outerRadius;
+
 				tick.css({
 					left: dialRadius + Math.sin(radian) * radius - tickRadius,
 					top: dialRadius - Math.cos(radian) * radius - tickRadius
@@ -193,8 +229,15 @@
 				if (inner) {
 					tick.css('font-size', '120%');
 				}
+
+				// Should any hours be disabled given the configured minimum value
+				if ((this.min && i < this.min[0]) || (this.max && i > this.max[0])) {
+					tick.addClass('invalid');
+				}
+
 				tick.html(i === 0 ? '00' : i);
 				hoursView.append(tick);
+
 				tick.on(mousedownEvent, mousedown);
 			}
 		}
@@ -209,8 +252,10 @@
 				top: dialRadius - Math.cos(radian) * outerRadius - tickRadius
 			});
 			tick.css('font-size', '120%');
+
 			tick.html(leadingZero(i));
 			minutesView.append(tick);
+
 			tick.on(mousedownEvent, mousedown);
 		}
 
@@ -231,6 +276,11 @@
 				dy = (isTouch ? e.originalEvent.touches[0] : e).pageY - y0,
 				z = Math.sqrt(dx * dx + dy * dy),
 				moved = false;
+
+			// If current element is invalid, do nothing with click
+			if ($(e.target).hasClass('invalid')) {
+				return;
+			}
 
 			// When clicking on minutes view space, check the mouse position
 			if (space && (z < outerRadius - tickRadius || z > outerRadius + tickRadius)) {
@@ -535,6 +585,33 @@
 			hideView.css('visibility', 'hidden');
 		}, duration);
 
+		// Check if the minutes need to be disabled for the selected hour (Based on the minimum value)
+		if (this.min || this.max) {
+			var ticks = this.minutesView.find('div.clockpicker-tick');
+			if (! this.hours) {
+				this.hours = parseInt(this.spanHours.html());	
+			}
+			if (! this.minutes) {
+				this.minutes = parseInt(this.spanMinutes.html());
+			}
+			if (! isHours && ((this.hours = this.min[0]) || (this.hours = this.max[0]))) {
+				// mark items as invalid for minutes
+				for (let i = 0; i < ticks.length; i++) {
+					var tick = $(ticks[i]);
+					var tickValue = parseInt(tick.html());
+					if (tickValue < this.min[1] || tickValue > this.max[1]) {
+						tick.addClass('invalid');
+					}
+				}
+			}
+			else {
+				for (let i = 0; i < ticks.length; i++) {
+					var tick = $(ticks[i]);
+					tick.removeClass('invalid');
+				}
+			}
+		}
+
 		if (raiseAfterHourSelect) {
 			this.raiseCallback(this.options.afterHourSelect);
 		}
@@ -544,8 +621,23 @@
 	ClockPicker.prototype.resetClock = function(delay){
 		var view = this.currentView,
 			value = this[view],
-			isHours = view === 'hours',
-			unit = Math.PI / (isHours ? 6 : 30),
+			isHours = view === 'hours';
+
+		// Update an invalid value to the closest valie one
+		if (! isHours && this.min && this.hours <= this.min[0] && value < this.min[1]) {
+			value = this.min[1];
+		}
+		else if (! isHours && this.max && this.hours >= this.max[0] && value > this.max[1]) {
+			value = this.max[1];
+		}
+		else if (isHours && this.min && value < this.min[0]) {
+			value = this.min[0];
+		}
+		else if (isHours && this.max && value > this.max[0]) {
+			value = this.max[0];
+		}
+
+		var unit = Math.PI / (isHours ? 6 : 30),
 			radian = value * unit,
 			radius = isHours && value > 0 && value < 13 ? innerRadius : outerRadius,
 			x = Math.sin(radian) * radius,
@@ -615,6 +707,11 @@
 			}
 		}
 
+		// Cancel action if below the minimum or above the maximum
+		if ((isHours && (value < this.min[0] || value > this.max[0])) || (! isHours && ((this.hours <= this.min[0] && value < this.min[1] || (this.hours >= this.max[0] && value > this.max[1]))))) {
+			return;
+		}
+
 		// Once hours or minutes changed, vibrate the device
 		if (this[this.currentView] !== value) {
 			if (vibrate && this.options.vibrate) {
@@ -671,8 +768,11 @@
 	ClockPicker.prototype.done = function() {
 		this.raiseCallback(this.options.beforeDone);
 		this.hide();
-		var last = this.input.prop('value'),
-			value = leadingZero(this.hours) + ':' + leadingZero(this.minutes);
+		var last = this.input.prop('value');
+		if (! Number.isInteger(this.hours)) {
+			this.hours = parseInt(this.spanHours.html());
+		}
+		var	value = leadingZero(this.hours) + ':' + leadingZero(this.minutes);
 		if  (this.options.twelvehour) {
 			value = value + this.amOrPm;
 		}
