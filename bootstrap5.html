@@ -1,0 +1,539 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ClockPicker</title>
+<link rel="stylesheet" type="text/css" href="assets/css/bootstrap5.min.css">
+<link rel="stylesheet" type="text/css" href="assets/css/bootstrap-icons.min.css">
+<link rel="stylesheet" type="text/css" href="dist/bootstrap5-clockpicker.min.css">
+<link rel="stylesheet" type="text/css" href="assets/css/github.min.css">
+<style type="text/css">
+.navbar h3 {
+	color: #f5f5f5;
+	margin-top: 14px;
+}
+.hljs-pre {
+	background: #f8f8f8;
+	padding: 3px;
+}
+.footer {
+	border-top: 1px solid #eee;
+	margin-top: 40px;
+	padding: 40px 0;
+}
+.input-group {
+	width: 110px;
+	margin-bottom: 10px;
+}
+.pull-center {
+	margin-left: auto;
+	margin-right: auto;
+}
+@media (min-width: 768px) {
+  .container {
+    max-width: 730px;
+  }
+}
+@media (max-width: 767px) {
+  .pull-center {
+    float: right;
+  }
+}
+</style>
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+  <script src="assets/js/html5shiv.js"></script>
+  <script src="assets/js/respond.min.js"></script>
+<![endif]-->
+</head>
+<body>
+
+<nav class="navbar navbar-dark bg-dark mb-3">
+	<div class="container">
+		<span class="navbar-brand">ClockPicker</span>
+		<div class="navbar-nav ms-auto">
+			<div class="nav-item">
+				<a class="nav-link" href="https://github.com/weareoutman/clockpicker">Fork me on GitHub</a>
+			</li>
+		</ul>
+	</div>
+</nav>
+
+<div class="container">
+	<p class="lead">
+		A clock-style timepicker for Bootstrap (or jQuery).
+		<a href="https://travis-ci.org/weareoutman/clockpicker"><img src="https://travis-ci.org/weareoutman/clockpicker.svg" alt="Build Status" data-canonical-src="https://travis-ci.org/weareoutman/clockpicker.svg" style="max-width:100%;"></a>
+	</p>
+
+	<p>
+		<a href="https://github.com/weareoutman/clockpicker/archive/gh-pages.zip" class="btn btn-lg btn-secondary" target="_blank">
+			<i class="bi bi-cloud-download"></i> Download ZIP
+		</a>
+		&nbsp; CSS &lt; 6KB, JS &lt; 9KB, after minified.
+	</p>
+
+	<h3>Browser support</h3>
+	<p>
+		All major browsers are supported, including IE 9+. It should look and behave well enough in IE 8.
+	</p>
+
+	<h3>Device support</h3>
+	<p>
+		Both desktop and mobile device are supported. It also works great in touch screen device.
+	</p>
+
+	<h3>Dependencies</h3>
+	<p>
+		ClockPicker was designed for Bootstrap in the beginning. So Bootstrap (and jQuery) is the only dependency(s).
+	</p>
+	<p>
+		Since it only used <code>.popover</code> and some of <code>.btn</code> styles of Bootstrap, I picked these styles to build a jQuery plugin.
+		Feel free to use <code>jquery-*</code> files instead of <code>bootstrap-*</code> , for non-bootstrap project.
+	</p>
+	<p>
+		<a href="jquery.html">See ClockPicker for jQuery</a>.
+	</p>
+
+	<h3>Examples</h3>
+	<a href="http://jsfiddle.net/weareoutman/YkvK9/">Try it on jsfiddle</a>
+	<div class="mb-3">
+		<h4>Default: </h4>
+		<div class="input-group clockpicker">
+			<input type="text" class="form-control" value="09:30">
+			<span class="input-group-text">
+				<i class="bi bi-clock"></i>
+			</span>
+		</div>
+		<pre class="hljs-pre"><code class="html">&lt;div class="input-group clockpicker"&gt;
+	&lt;input type="text" class="form-control" value="09:30"&gt;
+	&lt;span class="input-group-text"&gt;
+		&lt;i class="bi bi-clock"&gt;&lt;/span&gt;
+	&lt;/span&gt;
+&lt;/div&gt;
+&lt;script type="text/javascript"&gt;
+$('.clockpicker').clockpicker();
+&lt;/script&gt;</code></pre>
+	</div>
+	<div class="mb-3">
+		<h4>Place at left, align the arrow to top, auto close:</h4>
+		<div class="clearfix">
+			<div class="input-group clockpicker pull-center" data-placement="left" data-align="top" data-autoclose="true">
+				<input type="text" class="form-control" value="13:14">
+				<span class="input-group-text">
+					<i class="bi bi-clock"></i>
+				</span>
+			</div>
+		</div>
+		<pre class="hljs-pre"><code class="html">&lt;div class="input-group clockpicker" data-placement="left" data-align="top" data-autoclose="true"&gt;
+	&lt;input type="text" class="form-control" value="13:14"&gt;
+	&lt;span class="input-group-text"&gt;
+		&lt;i class="bi bi-clock"&gt;&lt;/span&gt;
+	&lt;/span&gt;
+&lt;/div&gt;
+&lt;script type="text/javascript"&gt;
+$('.clockpicker').clockpicker();
+&lt;/script&gt;</code></pre>
+	</div>
+	<div class="mb-3">
+		<h4>Set options in javascript, instead of <code>data-*</code> :</h4>
+		<div class="input-group clockpicker" data-placement="top" data-align="left" data-donetext="Done">
+			<input type="text" class="form-control" value="18:00">
+			<span class="input-group-text">
+				<i class="bi bi-clock"></i>
+			</span>
+		</div>
+		<pre class="hljs-pre"><code class="html">&lt;div class="input-group clockpicker"&gt;
+	&lt;input type="text" class="form-control" value="18:00"&gt;
+	&lt;span class="input-group-text"&gt;
+		&lt;i class="bi bi-clock"&gt;&lt;/span&gt;
+	&lt;/span&gt;
+&lt;/div&gt;
+&lt;script type="text/javascript"&gt;
+$('.clockpicker').clockpicker({
+	placement: 'top',
+	align: 'left',
+	donetext: 'Done'
+});
+&lt;/script&gt;</code></pre>
+	</div>
+	<div class="mb-3">
+		<h4>Set default value, input without addon, and manual operations:</h4>
+		<div class="clearfix">
+			<div class="pull-center clearfix" style="margin-bottom:10px;">
+				<button type="button" class="btn btn-secondary pull-right" id="check-minutes">Check the minutes</button>
+				<input class="form-control pull-right" id="single-input" value="" placeholder="Now" style="width:80px;margin-right:20px;">
+			</div>
+		</div>
+		<pre class="hljs-pre"><code class="html">&lt;input class="form-control" id="single-input" value="" placeholder="Now"&gt;
+&lt;button type="button" id="check-minutes"&gt;Check the minutes&lt;/button&gt;
+
+&lt;script type="text/javascript"&gt;
+var input = $('#single-input').clockpicker({
+	placement: 'bottom',
+	align: 'left',
+	autoclose: true,
+	'default': 'now'
+});
+
+// Manually toggle to the minutes view
+$('#check-minutes').click(function(e){
+	// Have to stop propagation here
+	e.stopPropagation();
+	input.clockpicker('show')
+			.clockpicker('toggleView', 'minutes');
+});
+&lt;/script&gt;</code></pre>
+	</div>
+	<div class="mb-3">
+		<h4>Callbacks:</h4>
+		<div class="clearfix">
+			<div class="input-group clockpicker-with-callbacks" data-clearbutton="true">
+				<input type="text" class="form-control" value="10:10">
+				<span class="input-group-text">
+					<i class="bi bi-clock"></i>
+				</span>
+			</div>
+		</div>
+		<pre class="hljs-pre"><code class="html">&lt;input class="form-control" id="single-input" value="" placeholder="Now"&gt;
+&lt;script type="text/javascript"&gt;
+var input = $('.clockpicker-with-callbacks').clockpicker({
+	donetext: 'Done',
+		init: function() { 
+			console.log("colorpicker initiated");
+		},
+		beforeShow: function() {
+			console.log("before show");
+		},
+		afterShow: function() {
+			console.log("after show");
+		},
+		beforeHide: function() {
+			console.log("before hide");
+		},
+		afterHide: function() {
+			console.log("after hide");
+		},
+		beforeHourSelect: function() {
+			console.log("before hour selected");
+		},
+		afterHourSelect: function() {
+			console.log("after hour selected");
+		},
+		afterMinuteSelect: function() {
+			console.log("after minute selected");
+		},
+		afterAmPmSelect: function() {
+			console.log("after AM/PM selected");
+		},
+		beforeDone: function() {
+			console.log("before done");
+		},
+		afterDone: function() {
+			console.log("after done");
+		},
+		beforeClear: function() {
+			console.log("before clear");
+		},
+		afterClear: function() {
+			console.log("after clear");
+		}
+});
+
+// Manually toggle to the minutes view
+$('#check-minutes').click(function(e){
+	// Have to stop propagation here
+	e.stopPropagation();
+	input.clockpicker('show')
+			.clockpicker('toggleView', 'minutes');
+});
+&lt;/script&gt;</code></pre>
+	</div>
+	<div class="mb-3">
+		<h4>Step sizes:</h4>
+		<div class="input-group clockpicker" data-hourstep="2" data-minutestep="10" data-donetext="Done">
+			<input type="text" class="form-control" value="18:00">
+			<span class="input-group-text">
+				<i class="bi bi-clock"></i>
+			</span>
+		</div>
+		<pre class="hljs-pre"><code class="html">&lt;div class="input-group clockpicker"&gt;
+	&lt;input type="text" class="form-control" value="18:00"&gt;
+	&lt;span class="input-group-text"&gt;
+		&lt;i class="bi bi-clock"&gt;&lt;/span&gt;
+	&lt;/span&gt;
+&lt;/div&gt;
+&lt;script type="text/javascript"&gt;
+$('.clockpicker').clockpicker({
+	hourstep: 2,
+	minutestep: 5,
+	donetext: 'Done'
+});
+&lt;/script&gt;</code></pre>
+	</div>
+	<div class="mb-3">
+		<h4>Twelve hour:</h4>
+		<div class="input-group clockpicker" data-donetext="Done" data-twelvehour="true">
+			<input type="text" class="form-control" value="18:00">
+			<span class="input-group-text">
+				<i class="bi bi-clock"></i>
+			</span>
+		</div>
+		<pre class="hljs-pre"><code class="html">&lt;div class="input-group clockpicker" data-donetext="Done" data-twelvehour="true"&gt;
+	&lt;input type="text" class="form-control" value="18:00"&gt;
+	&lt;span class="input-group-text"&gt;
+		&lt;i class="bi bi-clock"&gt;&lt;/span&gt;
+	&lt;/span&gt;
+&lt;/div&gt;
+&lt;script type="text/javascript"&gt;
+$('.clockpicker').clockpicker();
+&lt;/script&gt;</code></pre>
+	</div>
+
+	<h3>Options</h3>
+	<table class="table table-bordered table-striped">
+	<thead><tr>
+	<th>Name</th>
+	<th>Default</th>
+	<th>Description</th>
+	</tr></thead>
+	<tbody>
+	<tr>
+	<td>default</td>
+	<td>''</td>
+	<td>default time, 'now' or '13:14' e.g.</td>
+	</tr>
+	<tr>
+	<td>placement</td>
+	<td>'bottom'</td>
+	<td>popover placement</td>
+	</tr>
+	<tr>
+	<td>align</td>
+	<td>'left'</td>
+	<td>popover arrow align</td>
+	</tr>
+	<tr>
+	<td>donetext</td>
+	<td>'完成'</td>
+	<td>done button text</td>
+	</tr>
+	<tr>
+	<td>autoclose</td>
+	<td>false</td>
+	<td>auto close when minute is selected</td>
+	</tr>
+	<tr>
+	<td>twelvehour</td>
+	<td>false</td>
+	<td>enables twelve hour mode with AM & PM buttons</td>
+	</tr>
+	<td>vibrate</td>
+	<td>true</td>
+	<td>vibrate the device when dragging clock hand</td>
+	</tr>
+	<tr>
+	<td>fromnow</td>
+	<td>0</td>
+	<td>set default time to * milliseconds from now (using with default = 'now')</td>
+	</tr>
+	<tr>
+		<td>init</td>
+		<td></td>
+		<td>callback function triggered after the colorpicker has been initiated</td>
+	</tr>
+	<tr>
+		<td>beforeShow</td>
+		<td></td>
+		<td>callback function triggered before popup is shown</td>
+	</tr>
+	<tr>
+		<td>afterShow</td>
+		<td></td>
+		<td>callback function triggered after popup is shown</td>
+	</tr>
+	<tr>
+		<td>beforeHide</td>
+		<td></td>
+		<td>callback function triggered before popup is hidden<br/>
+			<b>Note:</b>&nbsp;<i>will be triggered between a beforeDone and afterDone</i>
+		</td>
+	</tr>
+	<tr>
+		<td>afterHide</td>
+		<td></td>
+		<td>callback function triggered after popup is hidden<br/>
+			<b>Note:</b>&nbsp;<i>will be triggered between a beforeDone and afterDone</i>
+		</td>
+	</tr>
+	<tr>
+		<td>beforeHourSelect</td>
+		<td></td>
+		<td>callback function triggered before user makes an hour selection</td>
+	</tr>
+	<tr>
+		<td>afterHourSelect</td>
+		<td></td>
+		<td>callback function triggered after user makes an hour selection</td>
+	</tr>
+	<tr>
+		<td>afterMinuteSelect</td>
+		<td></td>
+		<td>callback function triggered after user makes a minute selection</td>
+	</tr>
+	<tr>
+		<td>afterAmPmSelect</td>
+		<td></td>
+		<td>callback function triggered after user makes an AM/PM selection</td>
+	</tr>
+	<tr>
+		<td>beforeDone</td>
+		<td></td>
+		<td>callback function triggered before time is written to input</td>
+	</tr>
+	<tr>
+		<td>afterDone</td>
+		<td></td>
+		<td>callback function triggered after time is written to input</td>
+	</tr>
+	</tbody>
+	</table>
+
+	<h3>Operations</h3>
+	<table class="table table-bordered table-striped">
+	<thead><tr>
+	<th>operation</th>
+	<th>Arguments</th>
+	<th>Description</th>
+	</tr></thead>
+	<tbody>
+	<tr>
+	<td>show</td>
+	<td></td>
+	<td>show the clockpicker</td>
+	</tr>
+	<tr>
+	<td>hide</td>
+	<td></td>
+	<td>hide the clockpicker</td>
+	</tr>
+	<tr>
+	<td>remove</td>
+	<td></td>
+	<td>remove the clockpicker (and event listeners)</td>
+	</tr>
+	<tr>
+	<td>toggleView</td>
+	<td>'hours' or 'minutes'</td>
+	<td>toggle to hours or minutes view</td>
+	</tr>
+	</tbody>
+	</table>
+
+	<h3>What's included</h3>
+	<pre class="hljs-pre"><code class="bash">clockpicker/
+├── dist/
+│   ├── bootstrap-clockpicker.css      # full code for bootstrap
+│   ├── bootstrap-clockpicker.min.css  # compiled and minified files for bootstrap
+│   ├── clockpicker.js
+│   ├── clockpicker.min.js
+│   ├── jquery-clockpicker.css         # full code for jquery
+│   └── jquery-clockpicker.min.css     # compiled and minified files for jquery
+└── src/                               # source code
+    ├── clockpicker.css
+    ├── clockpicker.js
+    └── standalone.css                 # some styles picked from bootstrap</code></pre>
+
+    <h3>License</h3>
+    <p>MIT</p>
+</div>
+
+<div class="container">
+	<div class="footer">
+		<p>
+			&copy; Wang Shenwei. 
+			<a href="https://github.com/weareoutman/clockpicker">Fork me on GitHub</a>
+		</p>
+	</div>
+</div>
+
+<script type="text/javascript" src="assets/js/jquery.min.js"></script>
+<script type="text/javascript" src="assets/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="dist/bootstrap5-clockpicker.js"></script>
+<script type="text/javascript">
+$('.clockpicker').clockpicker()
+	.find('input').change(function(){
+		console.log(this.value);
+	});
+var input = $('#single-input').clockpicker({
+	placement: 'bottom',
+	align: 'left',
+	autoclose: true,
+	'default': 'now'
+});
+
+$('.clockpicker-with-callbacks').clockpicker({
+		donetext: 'Done',
+		init: function() { 
+			console.log("colorpicker initiated");
+		},
+		beforeShow: function() {
+			console.log("before show");
+		},
+		afterShow: function() {
+			console.log("after show");
+		},
+		beforeHide: function() {
+			console.log("before hide");
+		},
+		afterHide: function() {
+			console.log("after hide");
+		},
+		beforeHourSelect: function() {
+			console.log("before hour selected");
+		},
+		afterHourSelect: function() {
+			console.log("after hour selected");
+		},
+		afterMinuteSelect: function() {
+			console.log("after minute selected");
+		},
+		afterAmPmSelect: function() {
+			console.log("after AM/PM selected");
+		},
+		beforeDone: function() {
+			console.log("before done");
+		},
+		afterDone: function() {
+			console.log("after done");
+		},
+		beforeClear: function() {
+			console.log("before clear");
+		},
+		afterClear: function() {
+			console.log("after clear");
+		}
+	})
+	.find('input').change(function(){
+		console.log(this.value);
+	});
+
+// Manually toggle to the minutes view
+$('#check-minutes').click(function(e){
+	// Have to stop propagation here
+	e.stopPropagation();
+	input.clockpicker('show')
+			.clockpicker('toggleView', 'minutes');
+});
+if (/mobile/i.test(navigator.userAgent)) {
+	$('input').prop('readOnly', true);
+}
+</script>
+<script type="text/javascript" src="assets/js/highlight.min.js"></script>
+<script type="text/javascript">
+hljs.configure({tabReplace: '    '});
+hljs.initHighlightingOnLoad();
+</script>
+</body>
+</html>

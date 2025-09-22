@@ -139,6 +139,10 @@ gulp
 
 ## Change log
 
+0.0.10
+
+* Support for bootstrap 5
+
 0.0.9
 
 * Add clear button

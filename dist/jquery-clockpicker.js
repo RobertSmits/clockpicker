@@ -1,5 +1,5 @@
 /*!
- * ClockPicker v0.0.8 (http://weareoutman.github.io/clockpicker/)
+ * ClockPicker v0.0.10 (http://weareoutman.github.io/clockpicker/)
  * Copyright 2014 Wang Shenwei.
  * Licensed under MIT (https://github.com/weareoutman/clockpicker/blob/gh-pages/LICENSE)
  */
@@ -67,14 +67,14 @@
 	// Popover template
 	var tpl = [
 		'<div class="popover clockpicker-popover">',
-			'<div class="arrow"></div>',
-			'<div class="popover-title">',
+			'<div class="arrow popover-arrow"></div>',
+			'<div class="popover-title popover-header">',
 				'<span class="clockpicker-span-hours text-primary"></span>',
 				' : ',
 				'<span class="clockpicker-span-minutes"></span>',
 				'<span class="clockpicker-span-am-pm"></span>',
 			'</div>',
-			'<div class="popover-content">',
+			'<div class="popover-content popover-body">',
 				'<div class="clockpicker-plate">',
 					'<div class="clockpicker-canvas"></div>',
 					'<div class="clockpicker-dial clockpicker-hours"></div>',
@@ -95,7 +95,7 @@
 			amPmBlock = popover.find('.clockpicker-am-pm-block'),
 			isInput = element.prop('tagName') === 'INPUT',
 			input = isInput ? element : element.find('input'),
-			addon = element.find('.input-group-addon'),
+			addon = element.find('.input-group-addon, .input-group-text'),
 			self = this,
 			timer;
 
@@ -119,11 +119,12 @@
 		this.spanMinutes = popover.find('.clockpicker-span-minutes');
 		this.spanAmPm = popover.find('.clockpicker-span-am-pm');
 		this.amOrPm = "";
+		this.isBootstrap5 = window.getComputedStyle(document.body).getPropertyValue('--bs-body-color') != '';
 
 		// Setup for for 12 hour clock if option is selected
 		if (options.twelvehour) {
 
-			$('<button type="button" class="btn btn-sm btn-default clockpicker-button am-button">' + "AM" + '</button>')
+			$('<button type="button" class="btn btn-sm btn-default btn-secondary clockpicker-button am-button">' + "AM" + '</button>')
 				.on("click", function() {
 					self.amOrPm = "AM";
 					$('.clockpicker-span-am-pm').empty().append('AM');
@@ -131,7 +132,7 @@
 				}).appendTo(this.amPmBlock);
 				
 				
-			$('<button type="button" class="btn btn-sm btn-default clockpicker-button pm-button">' + "PM" + '</button>')
+			$('<button type="button" class="btn btn-sm btn-default btn-secondary clockpicker-button pm-button">' + "PM" + '</button>')
 				.on("click", function() {
 					self.amOrPm = 'PM';
 					$('.clockpicker-span-am-pm').empty().append('PM');
@@ -141,14 +142,14 @@
 		}
 		
 		if (options.clearbutton === true) {
-			$('<button type="button" class="btn btn-sm btn-default btn-block clockpicker-button">' + options.cleartext + '</button>')
+			$('<button type="button" class="btn btn-sm btn-default btn-outline-secondary btn-block w-100 clockpicker-button">' + options.cleartext + '</button>')
 				.click($.proxy(this.clear, this))
 				.appendTo(popover);
 		}
 		
 		if (options.autoclose === false || options.autoclose === 'semi') {
 			// If autoclose is not setted, append a button
-			$('<button type="button" class="btn btn-sm btn-default btn-block clockpicker-button">' + options.donetext + '</button>')
+			$('<button type="button" class="btn btn-sm btn-default btn-outline-secondary btn-block w-100 clockpicker-button">' + options.donetext + '</button>')
 				.click($.proxy(this.done, this))
 				.appendTo(popover);
 		}
@@ -159,6 +160,25 @@
 
 		popover.addClass(options.placement);
 		popover.addClass('clockpicker-align-' + options.align);
+		if (this.isBootstrap5) {
+			var cssClass = 'bs-popover-bottom';
+			switch (options.placement) {
+				case 'top': 
+					cssClass = 'bs-popover-top';
+					break;
+				case 'bottom': 
+					cssClass = 'bs-popover-bottom';
+					break;
+				case 'left': 
+					cssClass = 'bs-popover-start';
+					break;
+				case 'right': 
+					cssClass = 'bs-popover-end';
+					break;
+			};
+			
+			popover.addClass(cssClass);
+		}
 
 		this.spanHours.click($.proxy(this.toggleView, this, 'hours'));
 		this.spanMinutes.click($.proxy(this.toggleView, this, 'minutes'));
@@ -387,20 +407,21 @@
 			self = this;
 
 		popover.show();
+		var arrowOffset = (this.isBootstrap5 ? 8 : 0)
 
 		// Place the popover
 		switch (placement) {
 			case 'bottom':
-				styles.top = offset.top + height;
+				styles.top = offset.top + height + arrowOffset;
 				break;
 			case 'right':
-				styles.left = offset.left + width;
+				styles.left = offset.left + width + arrowOffset;
 				break;
 			case 'top':
-				styles.top = offset.top - popover.outerHeight();
+				styles.top = offset.top - popover.outerHeight() - arrowOffset;
 				break;
 			case 'left':
-				styles.left = offset.left - popover.outerWidth();
+				styles.left = offset.left - popover.outerWidth() - arrowOffset;
 				break;
 		}
 
