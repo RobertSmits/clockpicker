@@ -1,73 +1,79 @@
-var gulp = require('gulp'),
-	uglify = require('gulp-uglify'),
-	minifyCSS = require('gulp-minify-css'),
-	rename = require('gulp-rename'),
-	concat = require('gulp-concat'),
-	qunit = require('gulp-qunit'),
-	replace = require('gulp-replace'),
-	// Replace package.version
-	version = require('./package').version,
-	versionRegExp = /\{package\.version\}/;
+const gulp = require('gulp');
+const uglify = require('gulp-uglify');
+const minifyCSS = require('gulp-minify-css');
+const rename = require('gulp-rename');
+const concat = require('gulp-concat');
+const qunit = require('gulp-qunit');
+const replace = require('gulp-replace');
+
+// Replace package.version
+const version = require('./package').version;
+const versionRegExp = /\{package\.version\}/;
 
 // Rename and uglify scripts
-function js(prefix) {
-	gulp.src('src/clockpicker.js')
-		.pipe(rename({
-			prefix: prefix + '-'
-		}))
+function jsTask(prefix) {
+	return gulp.src('src/clockpicker.js')
+		.pipe(rename({ prefix: prefix + '-' }))
 		.pipe(replace(versionRegExp, version))
 		.pipe(gulp.dest('dist'))
 		.pipe(uglify({
-			preserveComments: 'some'
+			output: {
+				comments: /^!|@preserve|@license|@cc_on/i
+			}
 		}))
-		.pipe(rename({
-			suffix: '.min'
-		}))
+		.pipe(rename({ suffix: '.min' }))
 		.pipe(gulp.dest('dist'));
 }
 
 // Rename, concat and minify stylesheets
-function css(prefix) {
-	var stream;
-	if (prefix === 'bootstrap') {
+function cssTask(prefix) {
+	let stream;
+	if (prefix === 'bootstrap5') {
+		stream = gulp.src('src/clockpicker5.css')
+			.pipe(concat('clockpicker.css'));
+	} else if (prefix === 'bootstrap') {
 		stream = gulp.src('src/clockpicker.css');
 	} else {
-		// Concat with some styles picked from bootstrap
 		stream = gulp.src(['src/standalone.css', 'src/clockpicker.css'])
 			.pipe(concat('clockpicker.css'));
 	}
-	stream.pipe(rename({
-			prefix: prefix + '-'
-		}))
+	return stream
+		.pipe(rename({ prefix: prefix + '-' }))
 		.pipe(replace(versionRegExp, version))
 		.pipe(gulp.dest('dist'))
-		.pipe(minifyCSS({
-			keepSpecialComments: 1
-		}))
-		.pipe(rename({
-			suffix: '.min'
-		}))
+		.pipe(minifyCSS({ keepSpecialComments: 1 }))
+		.pipe(rename({ suffix: '.min' }))
 		.pipe(gulp.dest('dist'));
 }
 
-gulp.task('js', function() {
-	js('bootstrap');
-	js('jquery');
-});
+function js() {
+	jsTask('bootstrap5');
+	jsTask('bootstrap');
+	jsTask('jquery');
+	return Promise.resolve(); // tell Gulp it's done
+}
 
-gulp.task('css', function() {
-	css('bootstrap');
-	css('jquery');
-});
+function css() {
+	cssTask('bootstrap5');
+	cssTask('bootstrap');
+	cssTask('jquery');
+	return Promise.resolve();
+}
 
-gulp.task('watch', function() {
-	gulp.watch('src/*.js', ['js']);
-	gulp.watch('src/*.css', ['css']);
-});
+function watchFiles() {
+	gulp.watch('src/*.js', js);
+	gulp.watch('src/*.css', css);
+	return Promise.resolve();
+}
 
-gulp.task('test', function() {
-    return gulp.src('test/*.html')
-        .pipe(qunit());
-});
+function test() {
+	return gulp.src('test/*.html')
+		.pipe(qunit());
+}
 
-gulp.task('default', ['js', 'css', 'watch']);
+// Register tasks
+exports.js = js;
+exports.css = css;
+exports.test = test;
+exports.watch = watchFiles;
+exports.default = gulp.series(gulp.parallel(js, css), watchFiles);

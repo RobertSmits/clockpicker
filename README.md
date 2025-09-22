@@ -139,6 +139,10 @@ gulp
 
 ## Change log
 
+0.0.9
+
+* Add clear button
+
 0.0.8
 
 * Allow time steps for minutes and hours
